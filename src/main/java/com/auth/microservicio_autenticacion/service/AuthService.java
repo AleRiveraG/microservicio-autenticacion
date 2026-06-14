@@ -1,6 +1,7 @@
 package com.auth.microservicio_autenticacion.service;
 
 import com.auth.microservicio_autenticacion.client.UsuarioClient;
+import com.auth.microservicio_autenticacion.dto.UsuarioResponseDTO;
 import com.auth.microservicio_autenticacion.exception.UsuarioNotFoundException;
 import com.auth.microservicio_autenticacion.security.JwtService;
 import com.auth.microservicio_autenticacion.dto.AuthRequestDTO;
@@ -20,26 +21,9 @@ public class AuthService {
     private final UsuarioClient usuarioClient;
     private final JwtService jwtService;
 
-    public AuthResponseDTO validarUsuario(AuthRequestDTO dto) {
-        try {
-            usuarioClient.buscarPorId(dto.getIdUsuario());
-        } catch (Exception e) {
-            throw new UsuarioNotFoundException("Usuario con ID "
-                    + dto.getIdUsuario()+ " no encontrado.");
-        }
-
-        Auth auth = new Auth();
-        auth.setIdUsuario(dto.getIdUsuario());
-        auth.setNombreUsuario(dto.getNombreUsuario());
-        auth.setContrasena(encoder.encode(dto.getContrasena()));
-        auth.setRol(dto.getRol());
-
-        return mapToDTO(authRepository.save(auth), null);
-    }
-
     private AuthResponseDTO mapToDTO(Auth auth, String token) {
         return AuthResponseDTO.builder()
-                .id(auth.getIdUsuario())
+                .idUsuario(auth.getIdUsuario())
                 .nombreUsuario(auth.getNombreUsuario())
                 .rol(auth.getRol())
                 .token(token)
@@ -51,10 +35,21 @@ public class AuthService {
         Auth auth = new Auth();
         auth.setNombreUsuario(dto.getNombreUsuario());
         auth.setContrasena(encoder.encode(dto.getContrasena()));
+        auth.setCorreo(dto.getCorreo());
         auth.setRol(dto.getRol());
 
+        UsuarioResponseDTO usuario = new UsuarioResponseDTO();
+        usuario.setIdUsuario(auth.getIdUsuario());
+        usuario.setNombreUsuario(auth.getNombreUsuario());
+        usuario.setCorreo(auth.getCorreo());
+        usuario.setRol(auth.getRol());
+        usuario.setActivo(true);
+        usuario.setEquipoId(null);
+
+        usuarioClient.crear(usuario);
         return mapToDTO(authRepository.save(auth), null);
     }
+
 
     public AuthResponseDTO login(String nombreUsuario, String password) {
         Auth auth = authRepository.findByNombreUsuario(nombreUsuario)

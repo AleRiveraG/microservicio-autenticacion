@@ -1,7 +1,6 @@
 package com.auth.microservicio_autenticacion.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,14 +9,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class AuthRequestDTO {
-    @NotNull(message = "El id no puede ser vacio ni nulo")
-    private Long idUsuario;
 
     @NotBlank(message = "El nombre de usuario no puede estar vacío")
     private String nombreUsuario;
 
     @NotBlank(message = "La contraseña es obligatoria")
     private String contrasena;
+
+    @NotBlank(message = "El correo es obligatorio")
+    private String correo;
 
     @NotBlank(message = "El rol es obligatorio")
     private String rol;

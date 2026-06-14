@@ -3,11 +3,11 @@ package com.auth.microservicio_autenticacion.security;
 import com.auth.microservicio_autenticacion.model.Auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,8 @@ import java.util.Map;
 @Service
 public class JwtService {
 
-    private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    @Value("${jwt.secret}")
+    private String llaveSecreta;
 
     private static final long EXPIRATION_TIME = 86400000;
 
@@ -29,13 +30,13 @@ public class JwtService {
                 .setSubject(user.getNombreUsuario()) // Usamos username como subject
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(SECRET_KEY)
+                .signWith(getSigningKey())
                 .compact();
     }
 
     public boolean validarToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(SECRET_KEY).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -52,9 +53,15 @@ public class JwtService {
 
     private Claims extraerClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private SecretKey getSigningKey(){
+        return Keys.hmacShaKeyFor(
+                llaveSecreta.getBytes()
+        );
     }
 }

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.br.CPF;
 
 @Data
 @AllArgsConstructor
@@ -23,12 +22,10 @@ public class Auth {
     @Column(nullable = false, length = 255)
     private String contrasena;
 
+    @Column(nullable = false, length = 255)
+    private String correo;
+
     @Column(nullable = false, length = 100)
     private String rol;
-
-
-
-
-
 
 }

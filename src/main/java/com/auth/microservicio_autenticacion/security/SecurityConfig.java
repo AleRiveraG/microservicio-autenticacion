@@ -28,10 +28,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/registrar",
+                                "/api/auth/register",
                                 "/api/auth/login",
-                                "/api/auth/validar-token",
-                                "/api/auth/validar"
+                                "/api/auth/validarToken"
                         ).permitAll()
 
                         .anyRequest().authenticated()
